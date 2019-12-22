@@ -27,6 +27,7 @@ namespace PubComp.Caching.WebApiExtended.Net.Core
         {
             try
             {
+         2885
                 this.Util.ClearCache(cacheName);
                 Log.Info("Cache cleared: " + cacheName);
             }
