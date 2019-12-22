@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PubComp.Caching.Core.Directives;
 
 namespace PubComp.Caching.Core
 {
@@ -18,6 +19,33 @@ namespace PubComp.Caching.Core
         TValue Get<TValue>(String key, Func<TValue> getter);
 
         Task<TValue> GetAsync<TValue>(String key, Func<Task<TValue>> getter);
+
+        void Clear(String key);
+
+        Task ClearAsync(String key);
+
+        void ClearAll();
+
+        Task ClearAllAsync();
+    }
+
+    public interface ICacheWithDirectives
+    {
+        CacheDirectives Directives { get; }
+
+        string Name { get; }
+
+        bool TryGet<TValue>(String key, out TValue value, DateTimeOffset minimumContentTimestamp);
+
+        Task<TryGetResult<TValue>> TryGetAsync<TValue>(String key, DateTimeOffset minimumContentTimestamp);
+
+        void Set<TValue>(String key, TValue value, DateTimeOffset contentTimestamp);
+
+        Task SetAsync<TValue>(String key, TValue value, DateTimeOffset contentTimestamp);
+
+        TValue Get<TValue>(String key, Func<TValue> getter, DateTimeOffset minimumContentTimestamp);
+
+        Task<TValue> GetAsync<TValue>(String key, Func<Task<TValue>> getter, DateTimeOffset minimumContentTimestamp);
 
         void Clear(String key);
 
