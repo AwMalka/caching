@@ -11,7 +11,6 @@ namespace PubComp.Caching.SystemRuntime
         private System.Runtime.Caching.ObjectCache innerCache;
         private readonly MultiLock locks;
         private readonly InMemoryPolicy policy;
-        private readonly bool InvalidateOnUpdate;
 
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private readonly string notiferName;
@@ -19,8 +18,7 @@ namespace PubComp.Caching.SystemRuntime
         // ReSharper disable once NotAccessedField.Local - reference isn't necessary, but it makes debugging easier
         private readonly CacheSynchronizer synchronizer;
 
-        protected ObjectCache(
-            String name, System.Runtime.Caching.ObjectCache innerCache, InMemoryPolicy policy)
+        protected ObjectCache(String name, System.Runtime.Caching.ObjectCache innerCache, InMemoryPolicy policy)
         {
             this.name = name;
             this.policy = policy;
@@ -37,7 +35,6 @@ namespace PubComp.Caching.SystemRuntime
 
             this.notiferName = this.policy?.SyncProvider;
             this.synchronizer = CacheSynchronizer.CreateCacheSynchronizer(this, this.notiferName);
-            InvalidateOnUpdate = this.synchronizer?.IsInvalidateOnUpdateEnabled ?? false;
         }
 
         public string Name { get { return this.name; } }
@@ -75,10 +72,6 @@ namespace PubComp.Caching.SystemRuntime
 
         public void Set<TValue>(string key, TValue value)
         {
-            if (InvalidateOnUpdate && innerCache.Contains(key))
-            {
-                synchronizer?.TryPublishCacheItemUpdated(key);
-            }
             Add(key, value);
         }
 

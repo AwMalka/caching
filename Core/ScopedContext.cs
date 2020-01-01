@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace PubComp.Caching.Core
 {
-    public class Contextual<TContext> : IContextual<TContext> where TContext : class, new()
+    public class ScopedContext<TContext> : IScopedContext<TContext> where TContext : class, new()
     {
         private static readonly AsyncLocal<ImmutableStack<DisposableScopedContext>> ContextsStack = new AsyncLocal<ImmutableStack<DisposableScopedContext>>();
 

@@ -9,7 +9,6 @@ namespace PubComp.Caching.Core
         private readonly ICacheNotifier notifier;
 
         public bool IsActive { get; private set; }
-        public bool IsInvalidateOnUpdateEnabled => notifier.IsInvalidateOnUpdateEnabled;
         
         public CacheSynchronizer(ICache cache, ICacheNotifier notifier)
         {

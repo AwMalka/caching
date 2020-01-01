@@ -21,13 +21,13 @@ namespace PubComp.Caching.WebApiExtended
             if (!(actionContext.ControllerContext?.Controller is ICacheableApiController cacheableController))
                 throw new Exception($"controller does not implement {nameof(ICacheableApiController)}");
 
-            if (cacheableController.ContextualCacheDirectives == null)
-                throw new ArgumentNullException(nameof(cacheableController.ContextualCacheDirectives));
+            if (cacheableController.ScopedContextCacheDirectives == null)
+                throw new ArgumentNullException(nameof(cacheableController.ScopedContextCacheDirectives));
 
             cacheableController.CacheDirectivesOutcome = new CacheDirectivesOutcome { MethodTaken = CacheMethodTaken.None };
 
             var definedCacheDirectives = GetCacheDirectives(actionContext);
-            using (cacheableController.ContextualCacheDirectives.CreateNewScope(definedCacheDirectives))
+            using (cacheableController.ScopedContextCacheDirectives.CreateNewScope(definedCacheDirectives))
             {
                 var response = await continuation().ConfigureAwait(false);
 
@@ -47,7 +47,7 @@ namespace PubComp.Caching.WebApiExtended
                 .Value?.First();
 
             if (string.IsNullOrEmpty(cacheDirectivesJson))
-                return new CacheDirectives { Method = CacheMethod.Ignore };
+                return new CacheDirectives { Method = CacheMethod.None };
 
             return JsonConvert.DeserializeObject<CacheDirectives>(cacheDirectivesJson);
         }

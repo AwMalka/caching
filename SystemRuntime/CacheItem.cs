@@ -10,7 +10,7 @@ namespace PubComp.Caching.SystemRuntime
         {
         }
 
-        public CacheItem(Object value)
+        public CacheItem(object value)
         {
             this.Value = value;
         }

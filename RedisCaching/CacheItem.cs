@@ -11,6 +11,8 @@ namespace PubComp.Caching.RedisCaching
 
         public TValue Value { get; set; }
 
+        public DateTimeOffset ValueTimestamp { get; set; }
+
         public TimeSpan? ExpireIn { get; set; }
 
         public CacheItem()
@@ -26,13 +28,30 @@ namespace PubComp.Caching.RedisCaching
         {
             this.Id = GetId(cacheName, key);
             this.Value = value;
+            this.ValueTimestamp = DateTimeOffset.UtcNow;
+        }
+
+        public CacheItem(String cacheName, String key, TValue value, DateTimeOffset valueTimestamp)
+        {
+            this.Id = GetId(cacheName, key);
+            this.Value = value;
+            this.ValueTimestamp = valueTimestamp;
         }
 
         public CacheItem(String cacheName, String key, TValue value, TimeSpan? expireIn)
         {
             this.Id = GetId(cacheName, key);
             this.Value = value;
+            this.ValueTimestamp = DateTimeOffset.UtcNow;
             this.ExpireIn = expireIn;
+        }
+
+        public CacheItem(String cacheName, String key, TValue value, TimeSpan? expireIn, DateTimeOffset valueTimestamp)
+        {
+            this.Id = GetId(cacheName, key);
+            this.Value = value;
+            this.ExpireIn = expireIn;
+            this.ValueTimestamp = valueTimestamp;
         }
     }
 }

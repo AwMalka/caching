@@ -5,7 +5,7 @@ namespace PubComp.Caching.WebApiExtended
 {
     public interface ICacheableApiController
     {
-        IContextual<CacheDirectives> ContextualCacheDirectives { get; }
+        IScopedContext<CacheDirectives> ScopedContextCacheDirectives { get; }
 
         CacheDirectivesOutcome CacheDirectivesOutcome { get; set; }
     }

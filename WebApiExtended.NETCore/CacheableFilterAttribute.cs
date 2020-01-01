@@ -11,7 +11,8 @@ namespace PubComp.Caching.WebApiExtended.Net.Core
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
         {
-            var contextualDirectives = serviceProvider.GetService(typeof(IContextual<CacheDirectives>));
+            throw new NotImplementedException();
+            //var contextualDirectives = serviceProvider.GetService(typeof(IScopedContext<CacheDirectives>));
         }
     }
 }

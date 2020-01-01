@@ -2,7 +2,7 @@
 
 namespace PubComp.Caching.Core
 {
-    public interface IContextual<TContext> where TContext : class, new()
+    public interface IScopedContext<TContext> where TContext : class, new()
     {
         TContext CurrentOrDefault { get; }
 
