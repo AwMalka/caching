@@ -2,11 +2,21 @@
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>PubComp.Caching.MongoDbCaching</AssemblyName>
+    <AssemblyName>AwPubComp.Caching.MongoDbCaching</AssemblyName>
     <RootNamespace>PubComp.Caching.MongoDbCaching</RootNamespace>
     <Version>4.1.2-200204-1727</Version>
     <AssemblyVersion>4.1.1.0</AssemblyVersion>
     <FileVersion>4.1.1.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Danny Varod and Avi Malka</Authors>
+    <Product>Distributed Caching based on PubComp.Caching.Core and MongoDB</Product>
+    <Description>Distributed Caching based on PubComp.Caching.Core and MongoDB</Description>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/pub-comp/caching</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AwMalka/caching</RepositoryUrl>
+    <PackageReleaseNotes>Fork for https://github.com/AwMalka/caching for testing purposes</PackageReleaseNotes>
+    <PackageTags>AwPubComp</PackageTags>
+    <Copyright>Danny Varod</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1591</NoWarn>
@@ -19,6 +29,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\License.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="&quot;$(SolutionDir).NuGetPack\NuGetPack.exe&quot; &quot;$(ProjectPath)&quot; &quot;$(TargetPath)&quot; $(ConfigurationName)" />

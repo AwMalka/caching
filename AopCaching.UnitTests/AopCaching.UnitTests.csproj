@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>PubComp.Caching.AopCaching.UnitTests</AssemblyName>
+    <AssemblyName>AwPubComp.Caching.AopCaching.UnitTests</AssemblyName>
     <RootNamespace>PubComp.Caching.AopCaching.UnitTests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>

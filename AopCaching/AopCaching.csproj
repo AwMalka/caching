@@ -2,11 +2,22 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>PubComp.Caching.AopCaching</AssemblyName>
+    <AssemblyName>AwPubComp.Caching.AopCaching</AssemblyName>
     <RootNamespace>PubComp.Caching.AopCaching</RootNamespace>
     <Version>4.5.0-b200204-1727</Version>
     <!--Only change AssemblyVersion for major versions!--><AssemblyVersion>4.5.0.0</AssemblyVersion>
     <FileVersion>4.5.0.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Danny Varod and Avi Malka</Authors>
+    <Company>Danny Varod and Avi Malka</Company>
+    <Product>Aspect Oriented Caching based on PubComp.Caching.Core and PostSharp</Product>
+    <Description>Aspect Oriented Caching based on PubComp.Caching.Core and PostSharp</Description>
+    <Copyright>Danny Varod</Copyright>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/AwMalka/caching</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/pub-comp/caching</PackageProjectUrl>
+    <PackageTags>AwPubComp</PackageTags>
+    <PackageReleaseNotes>Fork for https://github.com/AwMalka/caching for testing purposes</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1591</NoWarn>
@@ -19,6 +30,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\License.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="&quot;$(SolutionDir).NuGetPack\NuGetPack.exe&quot; &quot;$(ProjectPath)&quot; &quot;$(TargetPath)&quot; $(ConfigurationName)" />

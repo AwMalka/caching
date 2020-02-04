@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>PubComp.Caching.DemoSynchronizedClient</AssemblyName>
+    <AssemblyName>AwPubComp.Caching.DemoSynchronizedClient</AssemblyName>
     <RootNamespace>PubComp.Caching.DemoSynchronizedClient</RootNamespace>
   </PropertyGroup>
   <ItemGroup>

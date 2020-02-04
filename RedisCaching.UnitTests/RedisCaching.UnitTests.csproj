@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>PubComp.Caching.RedisCaching.UnitTests</AssemblyName>
+    <AssemblyName>AwPubComp.Caching.RedisCaching.UnitTests</AssemblyName>
     <RootNamespace>PubComp.Caching.RedisCaching.UnitTests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
