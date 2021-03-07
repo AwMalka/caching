@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net;
+using NLog;
 
 namespace PubComp.Caching.RedisCaching
 {
@@ -14,16 +15,19 @@ namespace PubComp.Caching.RedisCaching
         private IRedisMonitor redisMonitor;
         public event EventHandler<Core.Events.ProviderStateChangedEventArgs> OnRedisConnectionStateChanged;
 
-        public static ConcurrentDictionary<string, Lazy<RedisClient>> ActiveRedisClients = new ConcurrentDictionary<string, Lazy<RedisClient>>();
+        public static ConcurrentDictionary<string, Lazy<RedisClient>> ActiveRedisClients 
+            = new ConcurrentDictionary<string, Lazy<RedisClient>>(StringComparer.InvariantCultureIgnoreCase);
 
         public static RedisClient GetNamedRedisClient(string connectionName) => GetNamedRedisClient(connectionName, null);
         public static RedisClient GetNamedRedisClient(string connectionName, EventHandler<Core.Events.ProviderStateChangedEventArgs> providerStateChangedCallback)
         {
+            var redisConnectionConfig = PubComp.Caching.Core.CacheManager.GetConnectionString(connectionName);
+
             var lazyRedisClientCreator = new Lazy<RedisClient>(() =>
             {
-                var redisConnectionConfig = PubComp.Caching.Core.CacheManager.GetConnectionString(connectionName);
                 var policy = (redisConnectionConfig as RedisConnectionString)?.Policy ?? new RedisClientPolicy();
-                return new RedisClient(redisConnectionConfig.ConnectionString, policy.ClusterType, policy.MonitorPort, policy.MonitorIntervalMilliseconds);
+                return new RedisClient(redisConnectionConfig.ConnectionString, policy.ClusterType, policy.MonitorPort,
+                    policy.MonitorIntervalMilliseconds);
             }, isThreadSafe: true);
 
             var client = ActiveRedisClients.GetOrAdd(connectionName, lazyRedisClientCreator).Value;
@@ -50,16 +54,17 @@ namespace PubComp.Caching.RedisCaching
         public bool IsConnected => this.innerContext?.IsConnected ?? false;
 
         private bool? lastConnectionStateChangedValue = null;
-        private void InvokeConnectionStateChangedCallback(bool newState)
+        private void InvokeConnectionStateChangedCallback(bool isConnected)
         {
-            if ((lastConnectionStateChangedValue ?? !newState) == newState)
+            if (lastConnectionStateChangedValue.HasValue && lastConnectionStateChangedValue.Value == isConnected)
                 return;
 
-            lastConnectionStateChangedValue = newState;
+            lastConnectionStateChangedValue = isConnected;
 
             try
             {
-                OnRedisConnectionStateChanged(this, new Core.Events.ProviderStateChangedEventArgs(newState));
+                log.Log(isConnected ? LogLevel.Info : LogLevel.Warn, $"RedisClient.ConnectionState Changed to: {isConnected}");
+                OnRedisConnectionStateChanged?.Invoke(this, new Core.Events.ProviderStateChangedEventArgs(isConnected));
             }
             catch (Exception e)
             {
@@ -72,13 +77,13 @@ namespace PubComp.Caching.RedisCaching
             InvokeConnectionStateChangedCallback(IsConnected);
         }
 
-        public void RegisterConnectionEvents(IConnectionMultiplexer connectionMultiplexer)
+        public void SubscribeToConnectionEvents(IConnectionMultiplexer connectionMultiplexer)
         {
             connectionMultiplexer.ConnectionFailed += OnConnectionMultiplexerConnectivityEvent;
             connectionMultiplexer.ConnectionRestored += OnConnectionMultiplexerConnectivityEvent;
         }
 
-        public void DeregisterConnectionEvents(IConnectionMultiplexer connectionMultiplexer)
+        public void UnsubscribeFromConnectionEvents(IConnectionMultiplexer connectionMultiplexer)
         {
             connectionMultiplexer.ConnectionFailed -= OnConnectionMultiplexerConnectivityEvent;
             connectionMultiplexer.ConnectionRestored -= OnConnectionMultiplexerConnectivityEvent;
@@ -90,7 +95,7 @@ namespace PubComp.Caching.RedisCaching
             {
                 if (this.innerContext != null)
                 {
-                    DeregisterConnectionEvents(this.innerContext);
+                    UnsubscribeFromConnectionEvents(this.innerContext);
                     this.innerContext.Close();
                     this.innerContext.Dispose();
                     this.innerContext = null;
@@ -101,7 +106,7 @@ namespace PubComp.Caching.RedisCaching
                 log.Debug("Redis Reconnect: {0}", config.ToString(false));
                 config.AbortOnConnectFail = false;
                 this.innerContext = ConnectionMultiplexer.Connect(config);
-                RegisterConnectionEvents(this.innerContext);
+                SubscribeToConnectionEvents(this.innerContext);
             }
         }
 
