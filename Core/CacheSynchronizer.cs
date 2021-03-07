@@ -7,30 +7,36 @@ namespace PubComp.Caching.Core
     {
         private readonly ICache cache;
         private readonly ICacheNotifier notifier;
+        private readonly bool invalidateOnStateChange;
 
         public bool IsActive { get; private set; }
-        public bool IsInvalidateOnUpdateEnabled => notifier.IsInvalidateOnUpdateEnabled;
-        
-        public CacheSynchronizer(ICache cache, ICacheNotifier notifier)
+
+        public CacheSynchronizer(ICache cache, ICacheNotifier notifier, bool invalidateOnStateChange)
         {
             this.cache = cache;
             this.notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
+            this.invalidateOnStateChange = invalidateOnStateChange;
 
             notifier.Subscribe(cache.Name, OnCacheUpdated, OnNotifierStateChanged);
         }
 
-        public bool TryPublishCacheItemUpdated(string key)
-            => notifier.TryPublish(cache.Name, key, CacheItemActionTypes.Updated);
+        public CacheSynchronizer(ICache cache, ICacheNotifier notifier) 
+            : this(cache, notifier, invalidateOnStateChange: false)
+        {
+        }
 
         private void OnNotifierStateChanged(object sender, Events.ProviderStateChangedEventArgs args)
         {
-            IsActive = args.NewState;
-            OnCacheUpdated(new CacheItemNotification("self", this.cache.Name, null, CacheItemActionTypes.RemoveAll));
+            var oldState = IsActive;
+            IsActive = args.IsAvailable;
+
+            if (this.invalidateOnStateChange && oldState != args.IsAvailable)
+                OnCacheUpdated(new CacheItemNotification("self", this.cache.Name, null, CacheItemActionTypes.RemoveAll));
         }
 
         private bool OnCacheUpdated(CacheItemNotification notification)
         {
-            if (notification.CacheName != this.cache.Name)
+            if (!this.cache.Name.Equals(notification.CacheName, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
             System.Diagnostics.Debug.WriteLine("Incoming Notification::From:{0}, Cache:{1}, Key:{2}, Action:{3}",
@@ -52,6 +58,9 @@ namespace PubComp.Caching.Core
         }
 
         public static CacheSynchronizer CreateCacheSynchronizer(ICache cache, string syncProviderName)
+            => CreateCacheSynchronizer(cache, syncProviderName, invalidateOnStateChange: false);
+
+        public static CacheSynchronizer CreateCacheSynchronizer(ICache cache, string syncProviderName, bool invalidateOnStateChange)
         {
             if (string.IsNullOrEmpty(syncProviderName))
                 return null;
@@ -61,7 +70,7 @@ namespace PubComp.Caching.Core
             if (notifier == null)
                 return null;
 
-            var synchronizer = new CacheSynchronizer(cache, notifier);
+            var synchronizer = new CacheSynchronizer(cache, notifier, invalidateOnStateChange);
 
             CacheManager.Associate(cache, notifier);
 
