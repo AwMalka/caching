@@ -8,32 +8,17 @@ namespace PubComp.Caching.Core
     {
         private static readonly AsyncLocal<ImmutableStack<DisposableScopedContext>> ContextsStack = new AsyncLocal<ImmutableStack<DisposableScopedContext>>();
 
-        public static TContext CurrentContext
-        {
-            get
-            {
-                if (ContextsStack.Value?.IsEmpty ?? true)
-                {
-                    return new TContext();
-                }
+        public static bool IsEmpty => ContextsStack.Value?.IsEmpty ?? true;
 
-                //we clone the context to make it immutable
-                return ContextsStack.Value.Peek().Context.Clone();
-            }
-        }
+        public static TContext CurrentContext 
+            => IsEmpty
+                ? new TContext() 
+                : ContextsStack.Value.Peek().Context.Clone(); //we clone the context to make it immutable
 
         public static DateTimeOffset CurrentTimestamp
-        {
-            get
-            {
-                if (ContextsStack.Value?.IsEmpty ?? true)
-                {
-                    return DateTimeOffset.UtcNow;
-                }
-
-                return ContextsStack.Value.Peek().ScopeTimestamp;
-            }
-        }
+            => IsEmpty
+                ? DateTimeOffset.UtcNow
+                : ContextsStack.Value.Peek().ScopeTimestamp;
 
         public static IDisposable CreateNewScope(TContext context)
         {

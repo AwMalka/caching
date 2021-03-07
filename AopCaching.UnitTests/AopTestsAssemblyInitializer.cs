@@ -36,6 +36,10 @@ namespace PubComp.Caching.AopCaching.UnitTests
             var cache2 = new MockCache(cache2Name);
             CacheManager.SetCache(cache2.Name, cache2);
 
+            const string scopedCache1Name = "PubComp.Caching.AopCaching.UnitTests.MocksScoped.Service*";
+            var scopedCache1 = new MockMemScopedCache(scopedCache1Name);
+            CacheManager.SetCache(scopedCache1.Name, scopedCache1);
+
             //const string cache3Name = "PubComp.Caching.AopCaching.UnitTests.Mocks.Generic*";
             //var cache3 = new MockCache(cache3Name);
             //CacheManager.SetCache(cache3.Name, cache3);
@@ -53,6 +57,8 @@ namespace PubComp.Caching.AopCaching.UnitTests
                 {"PubComp:CacheConfig:PubComp.Caching.AopCaching.UnitTests.Mocks.Generic*:Type", "PubComp.Caching.AopCaching.UnitTests.Mocks.MockCache"},
                 {"PubComp:CacheConfig:PubComp.Caching.AopCaching.UnitTests.Mocks.*:Assembly", "PubComp.Caching.AopCaching.UnitTests"},
                 {"PubComp:CacheConfig:PubComp.Caching.AopCaching.UnitTests.Mocks.*:Type", "PubComp.Caching.AopCaching.UnitTests.Mocks.MockCache"},
+                {"PubComp:CacheConfig:PubComp.Caching.AopCaching.UnitTests.MocksScoped.*:Assembly", "PubComp.Caching.AopCaching.UnitTests"},
+                {"PubComp:CacheConfig:PubComp.Caching.AopCaching.UnitTests.MocksScoped.*:Type", "PubComp.Caching.AopCaching.UnitTests.Mocks.MockMemScopedCache"},
             };
             
             return result;

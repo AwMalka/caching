@@ -38,6 +38,13 @@ namespace PubComp.Caching.Core
             return true;
         }
 
+        public CacheDirectives Clone()
+        {
+            return new CacheDirectives(method: this.Method, minimumValueTimestamp: this.MinimumValueTimestamp);
+        }
+
+        public static bool IsScopeEmpty => ScopedContext<CacheDirectives>.IsEmpty;
+
         public static IDisposable SetScope(CacheDirectives cacheDirectives)
         {
             var scopeContext = new CacheDirectives(cacheDirectives.Method, cacheDirectives.MinimumValueTimestamp);
@@ -47,11 +54,6 @@ namespace PubComp.Caching.Core
         public static IDisposable SetScope(CacheMethod method, DateTimeOffset minimumValueTimestamp)
         {
             return ScopedContext<CacheDirectives>.CreateNewScope(new CacheDirectives(method, minimumValueTimestamp));
-        }
-
-        public CacheDirectives Clone()
-        {
-            return new CacheDirectives(method: this.Method, minimumValueTimestamp: this.MinimumValueTimestamp);
         }
 
         public static CacheDirectives CurrentScope => ScopedContext<CacheDirectives>.CurrentContext;
